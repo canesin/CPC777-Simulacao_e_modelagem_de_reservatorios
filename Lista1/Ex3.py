@@ -48,7 +48,7 @@ def somando(x, y, r, s):
 for i in xrange(size):
     for j in xrange(size):
         somatorio = nsum(lambda ri, si: somando(XX[i, j], YY[i, j], ri, si),
-                         [0, inf], [0, inf], maxterms=20)
+                         [0, inf], [0, inf], maxterms=30)
         pres = Pi - (16. / pi**2) * ((muo * qo_std * Bo) / (k * h)) * somatorio
         Pressure[i, j] = pres.magnitude
 
@@ -59,5 +59,6 @@ plt.rcParams['legend.loc'] = 'best'
 plt.title(u'Pressão em curvas de nível - padrão five-spot')
 plt.xlabel(u'x [ft]')
 plt.ylabel(u'y [ft]')
-plt.contour(XX, YY, Pressure)
-plt.legend()
+pressure_levels = np.linspace(500, 2200, 9).tolist()
+CS = plt.contour(XX, YY, Pressure, levels=pressure_levels, colors='k')
+plt.clabel(CS, fmt='%.1f', fontsize=12, inline=1)
