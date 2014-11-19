@@ -5,11 +5,17 @@ Created on Mon Nov 17 22:39:15 2014
 @author: Fabio
 """
 from pint import UnitRegistry
-from matplotlib import pylab as pl
 import numpy as np
-from sympy import pi, cos, symbols
+from math import cos, pi
 from sympy.mpmath import mp, nsum, inf
 
+import matplotlib
+import matplotlib.cm as cm
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
+
+matplotlib.rcParams['xtick.direction'] = 'out'
+matplotlib.rcParams['ytick.direction'] = 'out'
 
 mp.dps = 25
 mp.pretty = True
@@ -28,29 +34,30 @@ rw = _Q(3.5, 'in')
 d = _Q(2000, 'ft')
 
 
-XX, YY = np.mgrid[0:d.magnitude:100j, 0:d.magnitude:100j]
-Pressure = np.empty((100, 100))
+size = 50
+
+XX, YY = np.mgrid[0:d.magnitude:complex(0, size),
+                  0:d.magnitude:complex(0, size)]
+Pressure = np.empty((size, size))
 dmag = d.magnitude
 
 
 def somando(x, y, r, s):
     return (cos((2*r + 1)*pi)*x/dmag)*(cos((2*s + 1)*pi)*y/dmag)/((2*r + 1)**2 + (2*s + 1)**2)
 
-for i in xrange(100):
-    for j in xrange(100):
-        somatorio = nsum(lambda ri, si: somando(XX[i, j], YY[i, j], ri, si), [0, inf], [0, inf])
+for i in xrange(size):
+    for j in xrange(size):
+        somatorio = nsum(lambda ri, si: somando(XX[i, j], YY[i, j], ri, si),
+                         [0, inf], [0, inf], maxterms=20)
         pres = Pi - (16. / pi**2) * ((muo * qo_std * Bo) / (k * h)) * somatorio
         Pressure[i, j] = pres.magnitude
 
-#
-#fig1 = pl.figure()
-#fig1.patch.set_facecolor('white')
-#pl.rcParams['legend.loc'] = 'best'
-#for idx, timestep in enumerate(Pressures):
-#    pl.title(u'Pressão no fundo do poço - $P_{wf}$')
-#    pl.xlabel(u'Tempo [sec]')
-#    pl.ylabel(u'Pressão [psi]')
-#    pl.plot(times,
-#            [pressure.to('psi').magnitude for pressure in timestep],
-#            label=Ss[idx])
-#    pl.legend()
+fig1 = plt.figure()
+fig1.patch.set_facecolor('white')
+plt.rcParams['legend.loc'] = 'best'
+
+plt.title(u'Pressão em curvas de nível - padrão five-spot')
+plt.xlabel(u'x [ft]')
+plt.ylabel(u'y [ft]')
+plt.contour(XX, YY, Pressure)
+plt.legend()
