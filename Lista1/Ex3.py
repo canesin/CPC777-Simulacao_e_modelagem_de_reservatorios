@@ -10,8 +10,6 @@ from math import cos, pi
 from sympy.mpmath import mp, nsum, inf
 
 import matplotlib
-import matplotlib.cm as cm
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 matplotlib.rcParams['xtick.direction'] = 'out'
